@@ -1,0 +1,36 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name _;
+
+    # Be sure that you set up a correct document root!
+    root {{.DocumentRoot}};
+
+    location ^~ /.git {
+        deny all;
+        return 404;
+    }
+
+    location ~ \.php {
+        try_files _ @backend;
+    }
+
+    location / {
+        # use this for pretty url
+        try_files $uri /$uri /index.html /index.php$is_args$args;
+    }
+
+    location @backend {
+        fastcgi_pass unix:/var/run/php/php{{.Version}}-fpm.sock;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        internal;
+    }
+
+    access_log syslog:server=unix:/dev/log,facility=local1,tag=nginx,severity=info default_short;
+    error_log syslog:server=unix:/dev/log,facility=local1,tag=nginx,severity=error;
+}

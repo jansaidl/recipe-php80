@@ -1,0 +1,34 @@
+zerops:
+  - setup: php74
+    build:
+      base: ubuntu@24.04
+      envVariables:
+        Version: "7.4"
+      prepareCommands:
+        - cd /build/source/; sudo -E zsc envReplace image/root /root
+        - cd /build/source/; sudo -E ./install.sh build
+      addToRunPrepare:
+        - ./image
+        - ./install.sh
+      deployFiles:
+        - ./src/~
+        - ./image
+    run:
+      base: ubuntu@24.04
+      envVariables:
+        Version: "7.4"
+        DocumentRoot: "/var/www/public"
+      prepareCommands:
+        - cd /home/zerops; sudo -E zsc envReplace image/root /root
+        - cd /home/zerops; sudo -E ./install.sh runtime
+        - cd /home/zerops; sudo -E zsc envReplace image/etc /etc
+      ports:
+        - port: 80
+          httpSupport: true
+      startCommands:
+        - command: sudo -E /usr/sbin/php-fpm7.4 --nodaemonize --fpm-config /etc/php/7.4/fpm/php-fpm.conf
+          name: php74
+          initCommands:
+            - cd /var/www; sudo -E zsc envReplace image/etc /etc
+            - sudo systemctl restart nginx.service
+
