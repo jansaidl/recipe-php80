@@ -1,9 +1,9 @@
 zerops:
-  - setup: php74
+  - setup: app
     build:
       base: ubuntu@24.04
       envVariables:
-        Version: "7.4"
+        Version: "8.0"
       prepareCommands:
         - cd /build/source/; sudo -E zsc envReplace image/root /root
         - cd /build/source/; sudo -E ./install.sh build
@@ -16,19 +16,21 @@ zerops:
     run:
       base: ubuntu@24.04
       envVariables:
-        Version: "7.4"
+        Version: "8.0"
         DocumentRoot: "/var/www/public"
       prepareCommands:
         - cd /home/zerops; sudo -E zsc envReplace image/root /root
         - cd /home/zerops; sudo -E ./install.sh runtime
         - cd /home/zerops; sudo -E zsc envReplace image/etc /etc
+        - touch /home/zerops/x
       ports:
         - port: 80
           httpSupport: true
       startCommands:
-        - command: sudo -E /usr/sbin/php-fpm7.4 --nodaemonize --fpm-config /etc/php/7.4/fpm/php-fpm.conf
-          name: php74
+        - command: sudo -E /usr/sbin/php-fpm8.0 --nodaemonize --fpm-config /etc/php/8.0/fpm/php-fpm.conf
+          name: php80
           initCommands:
             - cd /var/www; sudo -E zsc envReplace image/etc /etc
+            - sudo timedatectl set-timezone Europe/Prague
             - sudo systemctl restart nginx.service
 

@@ -27,7 +27,9 @@ php{{.Version}}-sqlite3 \
 php{{.Version}}-tidy \
 php{{.Version}}-xml \
 php{{.Version}}-zip \
-openssl
+openssl \
+php-dev \
+build-essential \
 
 systemctl disable php{{.Version}}-fpm.service
 systemctl mask php{{.Version}}-fpm.service
@@ -38,3 +40,6 @@ wget -O composer-setup.php https://getcomposer.org/installer
 php composer-setup.php
 rm composer-setup.php
 mv composer.phar /usr/local/bin/composer
+
+apt-get clean;
+rm -rf /var/lib/apt/lists/*
