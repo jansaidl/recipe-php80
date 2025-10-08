@@ -28,7 +28,7 @@ php{{.Version}}-tidy \
 php{{.Version}}-xml \
 php{{.Version}}-zip \
 openssl \
-php-dev \
+php{{.Version}}-dev \
 build-essential \
 
 systemctl disable php{{.Version}}-fpm.service
